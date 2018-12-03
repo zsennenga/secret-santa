@@ -1,0 +1,11 @@
+/*
+ * Header
+ */
+
+.navbar {
+  padding: 0.5rem 0;
+}
+
+.navbar .nav-item + .nav-item {
+  margin-left: 1rem;
+}

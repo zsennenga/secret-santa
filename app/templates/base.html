@@ -10,8 +10,25 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="../static/css/theme.css">
 </head>
 <body>
-    {% block content %}{% endblock %}
+    <div class="container py-3">
+        <nav class="navbar navbar-expand-sm navbar-light bg-transparent">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <a class="navbar-brand mr-auto" href="#">Secret Santa</a>
+                <div class="navbar-nav">
+                    <a class="nav-item nav-link active" href="/exchange">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-item btn btn-outline-primary" href="/auth/register">Register</a>
+                </div>
+            </div>
+        </nav>
+
+        {% block content %}{% endblock %}
+    </div>
 </body>
 </html>
