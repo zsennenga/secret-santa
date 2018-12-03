@@ -1,4 +1,4 @@
-from app.db_session import db
+from app.extensions.db_session import db
 
 
 class ExchangeMapping(db.Model):

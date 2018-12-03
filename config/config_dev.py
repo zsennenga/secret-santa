@@ -1,4 +1,4 @@
-from app.config_base import ConfigBase
+from config.config_base import ConfigBase
 
 
 class Config(ConfigBase):
@@ -7,3 +7,5 @@ class Config(ConfigBase):
     DB_DATABASE = 'exchange_prod'
     DB_USER = ''
     DB_PASS = ''
+
+    SECRET_KEY = 'buts lol'

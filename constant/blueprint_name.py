@@ -1,11 +1,18 @@
+from __future__ import annotations
+
+from enum import Enum
+
 from flask import url_for
 
 
-class BlueprintName:
+class BlueprintName(Enum):
     AUTH = 'auth'
     ADMIN = 'admin'
     EXCHANGE = 'exchange'
     SHARED = 'shared'
 
-    def url_for(self, blueprint, function_name):
-        return url_for(f'{blueprint}.{function_name}')
+    def url_for(
+            self,
+            function_name: str
+    ):
+        return url_for(f'{self.value}.{function_name}')
