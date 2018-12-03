@@ -3,7 +3,7 @@ import unittest
 
 from app.app import init_app
 from app.extensions.db_session import db
-from config.config_test import ConfigTest
+from config.config_test import Config
 
 
 class BaseTest(unittest.TestCase):
@@ -25,7 +25,7 @@ class BaseTest(unittest.TestCase):
     def _build_app(cls):
         app = init_app(
             import_name=__name__,
-            config_module=ConfigTest
+            config_module=Config
         )
 
         # Establish an application context before running the tests.
@@ -39,7 +39,7 @@ class BaseTest(unittest.TestCase):
         cls.app = cls._build_app()
         cls.client = cls.app.test_client()
 
-        cls.db_path = os.path.abspath(f"tmp/{ConfigTest.DB_DATABASE}")
+        cls.db_path = os.path.abspath(f"tmp/{Config.DB_DATABASE}")
         cls.db = cls._build_db(cls.db_path)
 
     @classmethod

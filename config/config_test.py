@@ -1,7 +1,7 @@
 from config.config_base import ConfigBase
 
 
-class ConfigTest(ConfigBase):
+class Config(ConfigBase):
     DB_DRIVER = 'sqlite'
     DB_DATABASE = 'exchange_test'
 
