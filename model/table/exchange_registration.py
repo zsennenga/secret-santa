@@ -1,7 +1,7 @@
 from app.db_session import db
 
 
-class SantaRegistration(db.Model):
+class ExchangeRegistration(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     exchange_id = db.Column(db.Integer, db.ForeignKey('exchange.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

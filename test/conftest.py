@@ -10,7 +10,7 @@ from config import Config
 
 class ConfigTest(ConfigBase):
     DB_DRIVER = 'sqlite'
-    DB_DATABASE = 'secret_santa'
+    DB_DATABASE = 'exchange_test'
 
 
 @pytest.fixture(scope='session')
@@ -34,13 +34,14 @@ def app(request):
 @pytest.fixture(scope='session')
 def db(request):
     """Session-wide test database."""
-    db_path = f"/tmp/{Config.DB_DATABASE}"
+    db_path = os.path.abspath(f"tmp/{Config.DB_DATABASE}")
     if os.path.exists(db_path):
         os.unlink(db_path)
 
     def teardown():
         _db.drop_all()
-        os.unlink(db_path)
+        if os.path.exists(db_path):
+            os.unlink(db_path)
 
     request.addfinalizer(teardown)
     return _db

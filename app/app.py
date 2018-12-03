@@ -1,6 +1,7 @@
 from typing import Type
 
 from flask import Flask
+from module_discovery_utils import load_all_modules_in_packages
 
 from app.blueprint.auth import Auth
 from app.blueprint.gift_exchange import GiftExchange
@@ -8,6 +9,7 @@ from app.blueprint.shared_pages import SharedPages
 from app.config_base import ConfigBase
 from app.db_session import db
 from config import Config
+from model import table
 
 _app: Flask = None
 
@@ -20,11 +22,14 @@ def init_app(import_name: str, config_module: Type[ConfigBase]) -> Flask:
 
     _app = Flask(import_name)
     _app.config['SQLALCHEMY_DATABASE_URI'] = config_module.db_uri()
+    _app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     _app.register_blueprint(SharedPages())
 
     _app.register_blueprint(GiftExchange(), url_prefix='/exchange')
-    _app.register_blueprint(Auth(), url_prexfix='/auth')
+    _app.register_blueprint(Auth(), url_prefix='/auth')
+
+    load_all_modules_in_packages(table)
 
     with _app.app_context():
         db.init_app(_app)

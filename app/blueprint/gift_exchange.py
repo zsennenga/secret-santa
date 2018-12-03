@@ -2,12 +2,13 @@ from flask import request
 
 from app.blueprint.base_blueprint import BaseBlueprint
 from app.db_session import db
-from model.table.exchange_registration import SantaRegistration
+from constant.blueprint_name import BlueprintName
+from model.table.exchange_registration import ExchangeRegistration
 
 
 class GiftExchange(BaseBlueprint):
     def __init__(self):
-        super(GiftExchange, self).__init__(import_name=__name__, name='gift_exchange')
+        super(GiftExchange, self).__init__(import_name=__name__, name=BlueprintName.EXCHANGE)
 
     def build_routes(self):
         @self.route('/', methods=['GET'])
@@ -25,7 +26,7 @@ class GiftExchange(BaseBlueprint):
             what_not_to_get = request.form['what_not_to_get']
             who_to_ask_for_help = request.form['who_to_ask_for_help']
 
-            registration = SantaRegistration(
+            registration = ExchangeRegistration(
                 what_not_to_get=what_not_to_get,
                 what_to_get=what_to_get,
                 who_to_ask_for_help=who_to_ask_for_help
