@@ -3,7 +3,7 @@ import unittest
 
 from app.app import init_app
 from app.extensions.db_session import db
-from test.base_classes.config_test import ConfigTest
+from config.config_test import ConfigTest
 
 
 class BaseTest(unittest.TestCase):

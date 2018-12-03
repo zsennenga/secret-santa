@@ -34,6 +34,10 @@ jobs:
             . venv/bin/activate
             pip install -r requirements.txt
 
+      - run:
+          name: create config
+          command: cp config/config_test.py config/config.py
+
       - save_cache:
           paths:
             - ./venv

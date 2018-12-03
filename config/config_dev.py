@@ -9,3 +9,5 @@ class Config(ConfigBase):
     DB_PASS = ''
 
     SECRET_KEY = 'buts lol'
+
+    SERVER_NAME = '127.0.0.1'
