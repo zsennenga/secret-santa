@@ -1,14 +1,18 @@
 from flask import request
 
 from app.blueprint.base_blueprint import BaseBlueprint
-from app.db_session import db
+from app.extensions.db_session import db
 from constant.blueprint_name import BlueprintName
 from model.table.exchange_registration import ExchangeRegistration
 
 
 class GiftExchange(BaseBlueprint):
     def __init__(self):
-        super(GiftExchange, self).__init__(import_name=__name__, name=BlueprintName.EXCHANGE)
+        super(GiftExchange, self).__init__(
+            import_name=__name__,
+            name=BlueprintName.EXCHANGE.value,
+            url_prefix='/exchange'
+        )
 
     def build_routes(self):
         @self.route('/', methods=['GET'])

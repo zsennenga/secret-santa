@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from app.db_session import db
+from app.extensions.db_session import db
 
 
 class Exchange(db.Model):

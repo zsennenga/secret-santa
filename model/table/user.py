@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from app.db_session import db
+from app.extensions.db_session import db
+from app.extensions.login_manager import login_manager
+from exception.auth.duplicate_email import DuplicateEmail
+from exception.auth.invalid_auth import UnableToAuthenticate
+from model.service.auth_service import AuthService
 
 
 class User(db.Model):
@@ -11,26 +15,61 @@ class User(db.Model):
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
 
     @classmethod
-    def login(cls, email: str, password: str) -> User:
-        # TODO for the love of god add a hashing algo here
-        user = db.session(cls).filter(
-            cls.email == email,
-            cls.password == password
+    @login_manager.user_loader
+    def get_by_id(cls, user_id: str):
+        return db.session.query(User).filter(
+            cls.id == user_id
         ).first()
 
-        if user is None:
-            # TODO meaningful exception classes
-            raise Exception('User not found with credentias')
+    @classmethod
+    def login(cls, email: str, plaintext_password: str) -> User:
+        auth = AuthService()
+
+        user = db.session.query(cls).filter(
+            cls.email == email
+        ).first()
+
+        if user is None or not auth.verify_password(
+                plaintext_password=plaintext_password,
+                password_hash=user.password
+        ):
+            raise UnableToAuthenticate()
 
         return user
 
     @classmethod
-    def register(cls, email, password, name):
+    def register(cls, email: str, plaintext_password: str, name: str):
+        existing_user = db.session.query(cls).filter(
+            cls.email == email
+        ).first()
+
+        if existing_user:
+            raise DuplicateEmail()
+
+        auth = AuthService()
+
         new_user = User(
             email=email,
-            password=password,
-            name=name
+            password=auth.hash_password(plaintext_password=plaintext_password),
+            name=name,
         )
 
         db.session.add(new_user)
         db.session.commit()
+
+        return new_user
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)

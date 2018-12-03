@@ -1,64 +1,70 @@
 from flask import request, render_template, url_for
+from flask_login import current_user, login_user
 from werkzeug.utils import redirect
 
 from app.blueprint.base_blueprint import BaseBlueprint
 from constant.blueprint_name import BlueprintName
+from exception.general.field_missing import FieldMissing
 from model.table.user import User
 
 
 class Auth(BaseBlueprint):
     def __init__(self):
-        super(Auth, self).__init__(import_name=__name__, name=BlueprintName.AUTH)
+        super(Auth, self).__init__(import_name=__name__, name=BlueprintName.AUTH.value, url_prefix='/auth')
 
     def build_routes(self):
-        def set_user_id_cookie(user_id):
-            # todo implement me
-            pass
-
-        def is_logged_in():
-            return False
-
         @self.route('/login', methods=['GET'])
         def login_get():
-            # TODO check logged in
-            if is_logged_in():
+            if current_user.is_authenticated():
                 return redirect(
-                    BlueprintName.url_for(BlueprintName.SHARED, 'home_get')
+                    BlueprintName.SHARED.url_for('home_get')
                 )
 
             return render_template('auth/login.html')
 
         @self.route('/login', methods=['POST'])
         def login_post():
-            json_body = request.get_json()
+            for field in ['email', 'password']:
+                if field not in request.form:
+                    raise FieldMissing(field)
+
+            email = request.form['email']
+            password = request.form['password']
 
             logged_in_user = User.login(
-                email=json_body['email'],
-                password=json_body['password']
+                email=email,
+                plaintext_password=password
             )
+            login_user(logged_in_user)
 
-            set_user_id_cookie(logged_in_user.id)
+            return str(current_user.id)
 
         @self.route('/register', methods=['GET'])
         def register_get():
-            # TODO check logged in
-            if is_logged_in():
+            if current_user.is_authenticated():
                 return redirect(url_for('shared_pages.home'))
 
             return render_template('auth/register.html')
 
         @self.route('/register', methods=['POST'])
         def register_post():
-            json_body = request.get_json()
+            try:
+                for field in ['email', 'password', 'name']:
+                    if field not in request.form:
+                        raise FieldMissing(field)
+            except FieldMissing as e:
+                return str(e), e.response_code
 
-            email = json_body['email']
-            password = json_body['password']
-            name = json_body['name']
+            email = request.form['email']
+            password = request.form['password']
+            name = request.form['name']
 
             registered_user = User.register(
                 email=email,
-                password=password,
+                plaintext_password=password,
                 name=name
             )
 
-            set_user_id_cookie(registered_user.id)
+            login_user(registered_user)
+
+            return str(current_user.id)

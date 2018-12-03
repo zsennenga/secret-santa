@@ -6,36 +6,41 @@ from module_discovery_utils import load_all_modules_in_packages
 from app.blueprint.auth import Auth
 from app.blueprint.gift_exchange import GiftExchange
 from app.blueprint.shared_pages import SharedPages
-from app.config_base import ConfigBase
-from app.db_session import db
-from config import Config
+from app.extensions.db_session import db
+from app.extensions.error_handler import ErrorHandler
+from app.extensions.login_manager import login_manager
+from config import ConfigBase, Config
 from model import table
-
-_app: Flask = None
 
 
 def init_app(import_name: str, config_module: Type[ConfigBase]) -> Flask:
-    global _app
+    app = Flask(import_name)
 
-    if _app is not None:
-        raise Exception('Multiple app initialization attempts!')
+    app.config['SQLALCHEMY_DATABASE_URI'] = config_module.db_uri()
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['REMEMBER_COOKIE_SECURE'] = True
 
-    _app = Flask(import_name)
-    _app.config['SQLALCHEMY_DATABASE_URI'] = config_module.db_uri()
-    _app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SERVER_NAME'] = config_module.SERVER_NAME
 
-    _app.register_blueprint(SharedPages())
+    app.secret_key = config_module.SECRET_KEY
 
-    _app.register_blueprint(GiftExchange(), url_prefix='/exchange')
-    _app.register_blueprint(Auth(), url_prefix='/auth')
+    app.register_blueprint(SharedPages())
+    app.register_blueprint(GiftExchange())
+    app.register_blueprint(Auth())
+
+    app.register_error_handler(Exception, ErrorHandler.handle_500)
 
     load_all_modules_in_packages(table)
 
-    with _app.app_context():
-        db.init_app(_app)
+    with app.app_context():
+        db.init_app(app)
         db.create_all()
 
-    return _app
+    login_manager.init_app(app)
+    login_manager.login_view = "auth.login_get"
+
+    return app
 
 
 def init_default_app():

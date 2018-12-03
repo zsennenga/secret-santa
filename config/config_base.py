@@ -5,6 +5,10 @@ class ConfigBase:
     DB_USER = ''
     DB_PASS = ''
 
+    SECRET_KEY = None
+
+    SERVER_NAME = None
+
     @classmethod
     def db_uri(cls):
         if cls.DB_DRIVER == 'mysql':
