@@ -1,4 +1,5 @@
 from flask import Blueprint
+from flask_login import current_user
 
 
 class BaseBlueprint(Blueprint):
@@ -8,7 +9,13 @@ class BaseBlueprint(Blueprint):
             name=name,
             url_prefix=url_prefix,
         )
+        self.build_globals()
         self.build_routes()
+
+    def build_globals(self):
+        @self.context_processor
+        def preload_context():
+            return {'user': current_user}
 
     def build_routes(self):
         raise NotImplementedError

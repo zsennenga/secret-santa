@@ -6,4 +6,19 @@
 
   <h3>Exchanges</h3>
 
+  {% for exchange in exchanges %}
+    <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">{{ exchange.name }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Ends on {{ exchange.ends_at.strftime('%B %d, %Y') }}</h6>
+        {% if exchange.description %}
+          <p class="card-text">{{ exchange.description }}</p>
+        {% endif %}
+        <div class="text-center">
+          <a href="/exchanges/{{ exchange.id }}/register" class="btn btn-primary ">Register</a>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
 {% endblock %}

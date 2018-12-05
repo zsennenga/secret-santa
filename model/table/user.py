@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
+from sqlalchemy.orm import relationship
+
 from app.extensions.db_session import db
 from app.extensions.login_manager import login_manager
 from exception.auth.duplicate_email import DuplicateEmail
@@ -19,7 +21,7 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     @classmethod
-    def get_by_id(cls, user_id: str):
+    def get_by_id(cls, user_id: int):
         return db.session.query(User).filter(
             cls.id == user_id
         ).first()

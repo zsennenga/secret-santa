@@ -1,10 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block title %}Exchanges - {{ exchange.name }}{% endblock %}
+
+{% block content %}
+
+  <h3>{{ exchange.name }}</h3>
+
+  This is the detail page for your exchange!
+
+  You are {% if not registration %}NOT {% endif %}registered.
+
+{% endblock %}
