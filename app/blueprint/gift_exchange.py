@@ -1,9 +1,12 @@
 from flask import render_template, request
 from flask_login import current_user, login_required
+from werkzeug.utils import redirect
 
 from app.blueprint.base_blueprint import BaseBlueprint
 from constant.blueprint_name import BlueprintName
+from exception.auth.not_authorized import NotAuthorized
 from exception.auth.not_logged_in import NotLoggedIn
+from model.service.matching_service import MatchingService
 from model.table.exchange_registration import ExchangeRegistration
 
 
@@ -45,3 +48,13 @@ class GiftExchange(BaseBlueprint):
             )
 
             return str(registration.id)
+
+        @self.route('/<id>/match', methods=['POST'])
+        @login_required
+        def match_post(id):
+            if not current_user.is_admin:
+                raise NotAuthorized()
+
+            MatchingService().match_users(id)
+
+            return redirect(BlueprintName.EXCHANGES.url_for('details_get', id=id))
