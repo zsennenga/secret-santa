@@ -29,6 +29,8 @@ class Exchange(db.Model):
             if not exchange:
                 break
 
+            phrase = gen_phrase()
+
         exchange = Exchange(
             friendly_identifier=phrase
         )
