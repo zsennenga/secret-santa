@@ -35,6 +35,7 @@ class GiftExchange(BaseBlueprint):
         def exchange_register_post(id):
             if not current_user.is_authenticated:
                 raise NotLoggedIn()
+
             registration = ExchangeRegistration.register(
                 exchange_id=id,
                 user_id=current_user.id,

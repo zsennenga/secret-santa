@@ -2,6 +2,7 @@ from flask import Response
 
 from constant.blueprint_name import BlueprintName
 from model.table.exchange import Exchange
+from model.table.exchange_registration import ExchangeRegistration
 from model.table.user import User
 from test.base_classes.base_test import BaseTest
 
@@ -46,3 +47,19 @@ class TestExchange(BaseTest):
         response = self._register_request()
 
         assert response.status_code == 200
+
+        exchange_registration_id = int(response.get_data().decode())
+
+        exchange = ExchangeRegistration.get(exchange_registration_id)
+
+        assert exchange.user_id == self.user.id
+        assert exchange.what_to_get == self.what_to_get
+        assert exchange.what_not_to_get == self.what_not_to_get
+        assert exchange.who_to_ask_for_help == self.who_to_ask_for_help
+
+    def test_registration_logged_out(self):
+        response = self._register_request()
+
+        assert response.status_code == 401
+
+        assert self.db.session.query(ExchangeRegistration).count() == 0

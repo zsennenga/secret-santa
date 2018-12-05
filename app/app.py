@@ -20,7 +20,7 @@ def init_app(import_name: str, config_module: Type[ConfigBase]) -> Flask:
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['TEMPLATES_AUTO_RELOAD'] = True
 
-    # app.config['SERVER_NAME'] = config_module.SERVER_NAME
+    app.config['SERVER_NAME'] = config_module.SERVER_NAME
 
     app.secret_key = config_module.SECRET_KEY
 
