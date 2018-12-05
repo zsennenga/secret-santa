@@ -7,7 +7,18 @@
   <h3>{{ exchange.name }}</h3>
 
   <div class="row">
-    {{ registration_details(your_registration) }}
+    <div class="col-lg">
+      <h5>You</h5>
+      {{ registration_details(your_registration) }}
+    </div>
+    <div class="col-lg">
+      <h5>Your match</h5>
+      {% if match_registration %}
+        {{ registration_details(match_registration) }}
+      {% else %}
+        You haven't been matched yet!
+      {% endif %}
+    </div>
   </div>
 
 {% endblock %}
@@ -15,33 +26,22 @@
 {% macro registration_details(registration) %}
   {% set isYours = registration.user_id == user.id %}
 
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">
-        {% if isYours %}
-          You
-        {% else %}
-          registration.user.name
-        {% endif %}
-      </h5>
-      <p class="card-text">
-        Here's the information {% if isYours %}you{% else %}your match{% endif %} submitted for this exchange.
-      </p>
+  <p class="card-text">
+    Here's the information {% if isYours %}you{% else %}your match{% endif %} submitted for this exchange.
+  </p>
 
-      <ul class="list-group">
-        <li class="list-group-item">
-          <h6>What to get</h6>
-          <p>{{ registration.what_to_get }}</p>
-        </li>
-        <li class="list-group-item">
-          <h6>What not to get</h6>
-          <p>{{ registration.what_not_to_get }}</p>
-        </li>
-        <li class="list-group-item">
-          <h6>Who to ask for help</h6>
-          <p>{{ registration.who_to_ask_for_help }}</p>
-        </li>
-      </ul>
-    </div>
-  </div>
+  <ul class="list-group">
+    <li class="list-group-item">
+      <h6>What to get</h6>
+      <p>{{ registration.what_to_get }}</p>
+    </li>
+    <li class="list-group-item">
+      <h6>What not to get</h6>
+      <p>{{ registration.what_not_to_get }}</p>
+    </li>
+    <li class="list-group-item">
+      <h6>Who to ask for help</h6>
+      <p>{{ registration.who_to_ask_for_help }}</p>
+    </li>
+  </ul>
 {% endmacro %}
