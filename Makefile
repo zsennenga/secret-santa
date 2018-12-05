@@ -3,14 +3,14 @@
 VIRTUALENV = $(shell which virtualenv)
 
 ifeq ($(strip $(VIRTUALENV)),)
-  VIRTUALENV = /usr/local/python/bin/virtualenv
+	VIRTUALENV = /usr/local/python/bin/virtualenv
 endif
 
 venv:
 	$(VIRTUALENV) -p $(shell which python3) venv
 
 clean:
-	rm -rf venv __pycache__ .cache *.pyc
+	rm -rf venv __pycache__ .cache *.pyc /tmp/exchange_test
 
 install: venv
 	. venv/bin/activate; pip install -r requirements.txt

@@ -3,6 +3,7 @@ from flask_login import current_user, login_user
 from werkzeug.utils import redirect
 
 from app.blueprint.base_blueprint import BaseBlueprint
+from app.forms import SignupForm, LoginForm
 from constant.blueprint_name import BlueprintName
 from exception.general.field_missing import FieldMissing
 from model.table.user import User
@@ -20,7 +21,7 @@ class Auth(BaseBlueprint):
                     BlueprintName.SHARED.url_for('home_get')
                 )
 
-            return render_template('auth/login.html')
+            return render_template('auth/login.html', form=LoginForm())
 
         @self.route('/login', methods=['POST'])
         def login_post():
@@ -37,14 +38,14 @@ class Auth(BaseBlueprint):
             )
             login_user(logged_in_user)
 
-            return str(current_user.id)
+            return redirect(BlueprintName.EXCHANGES.url_for('exchanges_get'))
 
         @self.route('/register', methods=['GET'])
         def register_get():
             if current_user.is_authenticated:
                 return redirect(url_for('shared_pages.home'))
 
-            return render_template('auth/register.html')
+            return render_template('auth/register.html', form=SignupForm())
 
         @self.route('/register', methods=['POST'])
         def register_post():
@@ -67,4 +68,4 @@ class Auth(BaseBlueprint):
 
             login_user(registered_user)
 
-            return str(current_user.id)
+            return redirect(BlueprintName.EXCHANGES.url_for('exchanges_get'))

@@ -11,25 +11,25 @@ class GiftExchange(BaseBlueprint):
     def __init__(self):
         super(GiftExchange, self).__init__(
             import_name=__name__,
-            name=BlueprintName.EXCHANGE.value,
-            url_prefix='/exchange'
+            name=BlueprintName.EXCHANGES.value,
+            url_prefix='/exchanges'
         )
 
     def build_routes(self):
         @self.route('/', methods=['GET'])
         @login_required
         def exchanges_get():
-            return render_template('exchange/home.html')
+            return render_template('exchanges/home.html')
 
         @self.route('/details/<id>', methods=['GET'])
         @login_required
         def details_get(id):
-            return render_template('exchange/details.html')
+            return render_template('exchanges/details.html')
 
         @self.route('/register', methods=['GET'])
         @login_required
         def exchange_register_get():
-            return render_template('exchange/register.html')
+            return render_template('exchanges/register.html')
 
         @self.route('/register/<id>', methods=['POST'])
         def exchange_register_post(id):

@@ -22,28 +22,26 @@ class TestAuth(BaseTest):
         assert AuthService().verify_password(plaintext_password=self.password, password_hash=user.password)
 
     def test_register_creates_user(self):
-        user_id = self.register_post().get_data().decode()
+        response = self.register_post()
+        assert response.status_code == 302
 
-        self._verify_user(user_id)
+        users = self.db.session.query(User).all()
 
-        return user_id
+        assert len(users) == 1
+        self._verify_user(users[0].id)
 
     def test_login_user(self):
-        user = User.register(
+        User.register(
             email=self.email,
             name=self.name,
             plaintext_password=self.password
         )
 
-        response = self.login_user().get_data().decode()
-
-        assert int(response) == user.id
-
-        self._verify_user(user.id)
+        response = self.login_user()
+        assert response.status_code == 302
 
     def test_login_nonexistent_user(self):
         response = self.login_user()
-
         assert response.status_code == 401
 
     def test_login_wrong_password(self):
@@ -54,11 +52,9 @@ class TestAuth(BaseTest):
 
     def test_register_with_existing_email(self):
         response = self.register_post()
-
-        assert response.status_code == 200
+        assert response.status_code == 302
 
         response = self.register_post()
-
         assert response.status_code == 400
 
     def test_missing_required_field_login(self):

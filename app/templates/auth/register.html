@@ -6,4 +6,18 @@
 
   <h3>Register</h3>
 
+  <form method="POST">
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id }}">{{ field.label }}</label>
+        {{ field(class="form-control") }}
+
+        {% if field.name == 'email' %}
+          <small class="form-text text-muted">We'll share your email with everyone.</small>
+        {% endif %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+
 {% endblock %}

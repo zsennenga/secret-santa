@@ -8,7 +8,7 @@ from flask import url_for
 class BlueprintName(Enum):
     AUTH = 'auth'
     ADMIN = 'admin'
-    EXCHANGE = 'exchange'
+    EXCHANGES = 'exchanges'
     SHARED = 'shared'
 
     def url_for(

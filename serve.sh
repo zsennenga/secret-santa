@@ -1,2 +1,2 @@
 #! /bin/bash
-gunicorn --bind 0.0.0.0:5000 "app.app:init_default_app()" --reload
+gunicorn --bind 0.0.0.0:5000 "app.app:init_default_app()" --reload --log-level debug
