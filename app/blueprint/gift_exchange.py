@@ -48,12 +48,14 @@ class GiftExchange(BaseBlueprint):
             if not exchange:
                 raise NotFound
 
-            registration = ExchangeRegistration.get(id, current_user.id)
+            user_registration = ExchangeRegistration.get(id, current_user.id)
+            if not user_registration:
+                return redirect(BlueprintName.EXCHANGES.url_for('exchanges_get'))
 
             return render_template(
                 'exchanges/details.html',
                 exchange=exchange,
-                registration=registration,
+                your_registration=user_registration,
             )
 
         @self.route('/<id>/register', methods=['GET'])
