@@ -12,7 +12,7 @@ from constant.christmas_words import gen_phrase
 class Exchange(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     friendly_identifier = db.Column(db.String(512))
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String(256), nullable=False)
     description = db.Column(db.Text)
     ends_at = db.Column(db.DateTime, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
