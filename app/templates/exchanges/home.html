@@ -7,16 +7,31 @@
   <h3>Exchanges</h3>
 
   {% for exchange in exchanges %}
+    {% set isRegistered = user.id in exchange.registered_user_ids %}
+    {% set numRegistered = exchange.registered_user_ids|length %}
+
     <div class="card" style="width: 18rem;">
       <div class="card-body">
-        <h5 class="card-title">{{ exchange.name }}</h5>
+        <div class="card-title">
+          <h5 style="display: inline-block">{{ exchange.name }}</h5>
+          {% if isRegistered %}
+            &nbsp;<small class="badge badge-success" style="vertical-align: top">Registered</small>
+          {% endif%}
+        </div>
         <h6 class="card-subtitle mb-2 text-muted">Ends on {{ exchange.ends_at.strftime('%B %d, %Y') }}</h6>
         {% if exchange.description %}
           <p class="card-text">{{ exchange.description }}</p>
         {% endif %}
         <div class="text-center">
-          <a href="/exchanges/{{ exchange.id }}/register" class="btn btn-primary ">Register</a>
+          {% if isRegistered %}
+            <a href="/exchanges/{{ exchange.id }}" class="btn btn-outline-primary">View</a>
+          {% else %}
+            <a href="/exchanges/{{ exchange.id }}/register" class="btn btn-primary">Register</a>
+          {% endif %}
         </div>
+      </div>
+      <div class="card-footer text-muted text-center">
+        {{ numRegistered }} {% if numRegistered == 1 %}person{% else %}people{% endif %} registered
       </div>
     </div>
   {% endfor %}

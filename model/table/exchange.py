@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List
 
+from sqlalchemy.ext.associationproxy import association_proxy
+
 from app.extensions.db_session import db
 from constant.christmas_words import gen_phrase
 
@@ -14,6 +16,8 @@ class Exchange(db.Model):
     description = db.Column(db.Text)
     ends_at = db.Column(db.DateTime, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    registered_user_ids = association_proxy('registrations', 'user_id')
 
     @classmethod
     def get_by_id(cls, exchange_id):
