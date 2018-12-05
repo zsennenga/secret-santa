@@ -1,3 +1,4 @@
+from datetime import datetime
 from random import randint
 
 from model.service.matching_service import MatchingService
@@ -17,7 +18,10 @@ class TestMatch(BaseTest):
         return randint(0, 10000000)
 
     def _create_exchange(self):
-        return Exchange.create()
+        return Exchange.create(
+            name='test',
+            ends_at=datetime.utcnow()
+        )
 
     def _create_user(self, exchange_id):
         user = User.register(
@@ -42,10 +46,10 @@ class TestMatch(BaseTest):
 
         user_ids = sorted(element.id for element in registrations)
 
-        giver_ids = sorted(element.giver_id for element in mappings)
-        getter_ids = sorted(element.getter_id for element in mappings)
+        giver_registration_ids = sorted(element.giver_registration_id for element in mappings)
+        getter_registration_ids = sorted(element.getter_registration_id for element in mappings)
 
-        assert user_ids == giver_ids == getter_ids
+        assert user_ids == giver_registration_ids == getter_registration_ids
 
     def test_many_exchange(self):
         for i in range(0, 10):

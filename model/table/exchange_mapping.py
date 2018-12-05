@@ -27,11 +27,11 @@ class ExchangeMapping(db.Model):
     )
 
     @classmethod
-    def setup_mapping(cls, exchange_id, giver_id, getter_id):
+    def setup_mapping(cls, exchange_id, giver_registration_id, getter_registration_id):
         match = ExchangeMapping(
             exchange_id=exchange_id,
-            giver_id=giver_id,
-            getter_id=getter_id
+            giver_registration_id=giver_registration_id,
+            getter_registration_id=getter_registration_id
         )
 
         db.session.add(match)

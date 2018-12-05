@@ -18,10 +18,10 @@ class MatchingService:
 
     def _do_match(self, exchange_ids):
         while True:
-            getter_ids = exchange_ids.copy()
-            random.shuffle(getter_ids)
+            getter_registration_ids = exchange_ids.copy()
+            random.shuffle(getter_registration_ids)
 
-            mappings = list(zip(exchange_ids, getter_ids))
+            mappings = list(zip(exchange_ids, getter_registration_ids))
 
             if not self._test_match(mappings):
                 logging_service.logger.info("Failed to do match, recomputing..")
@@ -43,11 +43,11 @@ class MatchingService:
 
         mappings = self._do_match([element.id for element in registrations])
 
-        for giver_id, getter_id in mappings:
+        for giver_registration_id, getter_registration_id in mappings:
             ExchangeMapping.setup_mapping(
                 exchange_id=exchange_id,
-                giver_id=giver_id,
-                getter_id=getter_id,
+                giver_registration_id=giver_registration_id,
+                getter_registration_id=getter_registration_id,
             )
 
         db.session.commit()

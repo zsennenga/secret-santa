@@ -97,4 +97,4 @@ class GiftExchange(BaseBlueprint):
 
             MatchingService().match_users(id)
 
-            return redirect(BlueprintName.EXCHANGES.url_for('details_get', id=id))
+            return redirect(BlueprintName.EXCHANGES.url_for('exchange_get', id=id))
