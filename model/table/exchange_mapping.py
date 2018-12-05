@@ -11,7 +11,7 @@ class ExchangeMapping(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     @classmethod
-    def setup_registration(cls, exchange_id, giver_id, getter_id):
+    def setup_mapping(cls, exchange_id, giver_id, getter_id):
         match = ExchangeMapping(
             exchange_id=exchange_id,
             giver_id=giver_id,
