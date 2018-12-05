@@ -10,3 +10,11 @@ class ExchangeMapping(db.Model):
     getter_id = db.Column(db.Integer, db.ForeignKey('exchange_registration.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
+    def setup_registration(self, exchange_id, giver_id, getter_id):
+        match = ExchangeMapping(
+            exchange_id=exchange_id,
+            giver_id=giver_id,
+            getter_id=getter_id
+        )
+
+        db.session.add(match)
