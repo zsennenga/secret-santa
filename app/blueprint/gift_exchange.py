@@ -46,7 +46,7 @@ class GiftExchange(BaseBlueprint):
                 user_id=current_user.id,
                 what_not_to_get=what_not_to_get,
                 what_to_get=what_to_get,
-                who_to_ask_for_help=who_to_ask_for_help
+                who_to_ask_for_help=who_to_ask_for_help,
             )
 
             db.session.add(registration)
