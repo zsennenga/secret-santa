@@ -12,6 +12,12 @@ class Exchange(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     @classmethod
+    def get_by_id(cls, exchange_id):
+        return db.session.query(Exchange).filter(
+            cls.id == exchange_id
+        ).first()
+
+    @classmethod
     def create(cls) -> Exchange:
         phrase = gen_phrase()
 
