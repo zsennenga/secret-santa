@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Response
 
 from constant.blueprint_name import BlueprintName
@@ -15,7 +17,10 @@ class TestExchange(BaseTest):
         self.what_not_to_get = 'a dog'
         self.who_to_ask_for_help = 'nora or zach'
 
-        self.exchange = Exchange.create()
+        self.exchange = Exchange.create(
+            name='test',
+            ends_at=datetime.utcnow()
+        )
         self.user = User.register(
             email='test_email',
             plaintext_password='test_password',
@@ -46,11 +51,13 @@ class TestExchange(BaseTest):
 
         response = self._register_request()
 
-        assert response.status_code == 200
+        assert response.status_code == 302
 
-        exchange_registration_id = int(response.get_data().decode())
+        exchanges = self.db.session.query(ExchangeRegistration).all()
 
-        exchange = ExchangeRegistration.get(exchange_registration_id)
+        assert len(exchanges) == 1
+
+        exchange = exchanges[0]
 
         assert exchange.user_id == self.user.id
         assert exchange.what_to_get == self.what_to_get
@@ -60,6 +67,6 @@ class TestExchange(BaseTest):
     def test_registration_logged_out(self):
         response = self._register_request()
 
-        assert response.status_code == 401
+        assert response.status_code == 302
 
         assert self.db.session.query(ExchangeRegistration).count() == 0

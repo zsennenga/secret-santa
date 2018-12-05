@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, PasswordField, validators
+from wtforms import Form, StringField, PasswordField, validators, TextAreaField
 
 
 class LoginForm(Form):
@@ -23,3 +23,9 @@ class SignupForm(Form):
             validators.length(min=6, max=70),
         ],
     )
+
+
+class RegisterForm(Form):
+    what_to_get = TextAreaField(label='What to get', validators=[validators.InputRequired()])
+    what_not_to_get = TextAreaField(label='What not to get', validators=[validators.InputRequired()])
+    who_to_ask_for_help = TextAreaField(label='Who to ask for help', validators=[validators.InputRequired()])

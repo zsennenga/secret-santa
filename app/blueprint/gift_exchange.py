@@ -1,12 +1,16 @@
+from datetime import datetime
+
 from flask import render_template, request
 from flask_login import current_user, login_required
+from werkzeug.exceptions import NotFound
 from werkzeug.utils import redirect
 
 from app.blueprint.base_blueprint import BaseBlueprint
+from app.forms import RegisterForm
 from constant.blueprint_name import BlueprintName
 from exception.auth.not_authorized import NotAuthorized
-from exception.auth.not_logged_in import NotLoggedIn
 from model.service.matching_service import MatchingService
+from model.table.exchange import Exchange
 from model.table.exchange_registration import ExchangeRegistration
 
 
@@ -22,24 +26,60 @@ class GiftExchange(BaseBlueprint):
         @self.route('/', methods=['GET'])
         @login_required
         def exchanges_get():
-            return render_template('exchanges/home.html')
+            exchanges = Exchange.get_all()
 
-        @self.route('/details/<id>', methods=['GET'])
+            # XXX: If we don't have any exchanges, make one for testing
+            if not exchanges:
+                exchanges = [Exchange.create(
+                    name='Secret Santa',
+                    description='Gift a present to one of your closest friends on a day that is not Christmas!',
+                    ends_at=datetime(2018, 12, 25),
+                )]
+
+            return render_template(
+                'exchanges/home.html',
+                exchanges=exchanges,
+            )
+
+        @self.route('/<id>', methods=['GET'])
         @login_required
-        def details_get(id):
-            return render_template('exchanges/details.html')
+        def exchange_get(id):
+            exchange = Exchange.get_by_id(id)
+            if not exchange:
+                raise NotFound
 
-        @self.route('/register', methods=['GET'])
+            user_registration = ExchangeRegistration.get(id, current_user.id)
+            if not user_registration:
+                return redirect(BlueprintName.EXCHANGES.url_for('exchanges_get'))
+
+            match_registration = None
+            if user_registration and user_registration.giver_mapping:
+                match_registration = user_registration.giver_mapping.getter_registration
+
+            return render_template(
+                'exchanges/details.html',
+                exchange=exchange,
+                your_registration=user_registration,
+                match_registration=match_registration,
+            )
+
+        @self.route('/<id>/register', methods=['GET'])
         @login_required
-        def exchange_register_get():
-            return render_template('exchanges/register.html')
+        def exchange_register_get(id):
+            exchange = Exchange.get_by_id(id)
+            if not exchange:
+                raise NotFound
 
-        @self.route('/register/<id>', methods=['POST'])
+            return render_template(
+                'exchanges/register.html',
+                exchange=exchange,
+                form=RegisterForm(),
+            )
+
+        @self.route('/<id>/register', methods=['POST'])
+        @login_required
         def exchange_register_post(id):
-            if not current_user.is_authenticated:
-                raise NotLoggedIn()
-
-            registration = ExchangeRegistration.register(
+            ExchangeRegistration.register(
                 exchange_id=id,
                 user_id=current_user.id,
                 what_to_get=request.form.get('what_to_get'),
@@ -47,7 +87,7 @@ class GiftExchange(BaseBlueprint):
                 who_to_ask_for_help=request.form.get('who_to_ask_for_help'),
             )
 
-            return str(registration.id)
+            return redirect(BlueprintName.EXCHANGES.url_for('exchange_get', id=id))
 
         @self.route('/<id>/match', methods=['POST'])
         @login_required
@@ -57,4 +97,4 @@ class GiftExchange(BaseBlueprint):
 
             MatchingService().match_users(id)
 
-            return redirect(BlueprintName.EXCHANGES.url_for('details_get', id=id))
+            return redirect(BlueprintName.EXCHANGES.url_for('exchange_get', id=id))

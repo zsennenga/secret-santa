@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional, List
 
+from sqlalchemy.orm import relationship
+
 from app.extensions.db_session import db
 
 
@@ -15,10 +17,14 @@ class ExchangeRegistration(db.Model):
     who_to_ask_for_help = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
+    exchange = relationship('Exchange', backref='registrations')
+    user = relationship('User', backref='registrations')
+
     @classmethod
-    def get(cls, exchange_id: int) -> Optional[ExchangeRegistration]:
+    def get(cls, exchange_id: int, user_id: int) -> Optional[ExchangeRegistration]:
         return db.session.query(ExchangeRegistration).filter(
-            ExchangeRegistration.id == exchange_id
+            ExchangeRegistration.exchange_id == exchange_id,
+            ExchangeRegistration.user_id == user_id,
         ).first()
 
     @classmethod

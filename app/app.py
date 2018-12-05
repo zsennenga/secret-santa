@@ -26,6 +26,8 @@ def init_app(import_name: str, config_module: Type[ConfigBase]) -> Flask:
 
     app.secret_key = config_module.SECRET_KEY
 
+    app.url_map.strict_slashes = False
+
     app.register_blueprint(SharedPages())
     app.register_blueprint(GiftExchange())
     app.register_blueprint(Auth())
