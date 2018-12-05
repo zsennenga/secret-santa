@@ -24,9 +24,9 @@
         {% endif %}
         <div class="text-center">
           {% if isRegistered %}
-            <a href="/exchanges/{{ exchange.id }}" class="btn btn-outline-primary">View</a>
+            <a href="{{ url_for('exchanges.exchange_get', id=exchange.id) }}" class="btn btn-outline-primary">View</a>
           {% else %}
-            <a href="/exchanges/{{ exchange.id }}/register" class="btn btn-primary">Register</a>
+            <a href="{{ url_for('exchanges.exchange_register_get', id=exchange.id) }}" class="btn btn-primary">Register</a>
           {% endif %}
         </div>
       </div>
