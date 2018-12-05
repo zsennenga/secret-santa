@@ -13,8 +13,8 @@ class ExchangeMapping(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     exchange = relationship('Exchange', backref='mappings')
-    giver_registration = relationship('User', foreign_keys=[giver_registration_id], backref='giver_mapping')
-    getter_registration = relationship('User', foreign_keys=[getter_registration_id], backref='getter_mapping')
+    giver_registration = relationship('ExchangeRegistration', foreign_keys=[giver_registration_id], backref='giver_mapping')
+    getter_registration = relationship('ExchangeRegistration', foreign_keys=[getter_registration_id], backref='getter_mapping')
 
     @classmethod
     def setup_mapping(cls, exchange_id, giver_id, getter_id):
