@@ -1,3 +1,5 @@
+from flask import render_template
+
 from app.blueprint.base_blueprint import BaseBlueprint
 from constant.blueprint_name import BlueprintName
 
@@ -12,6 +14,4 @@ class SharedPages(BaseBlueprint):
     def build_routes(self):
         @self.route('/', methods=['GET'])
         def home():
-            # HTML form showing 5 things:
-            # Name, email, what to get me, what not to get me, who to ask for help with my gift
-            return "Hewwo world"
+            return render_template('shared/home.html')
