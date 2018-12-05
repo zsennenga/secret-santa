@@ -10,7 +10,8 @@ class ExchangeMapping(db.Model):
     getter_id = db.Column(db.Integer, db.ForeignKey('exchange_registration.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
-    def setup_registration(self, exchange_id, giver_id, getter_id):
+    @classmethod
+    def setup_registration(cls, exchange_id, giver_id, getter_id):
         match = ExchangeMapping(
             exchange_id=exchange_id,
             giver_id=giver_id,
@@ -18,3 +19,9 @@ class ExchangeMapping(db.Model):
         )
 
         db.session.add(match)
+
+    @classmethod
+    def get_by_exchange_id(cls, exchange_id):
+        return db.session.query(ExchangeMapping).filter(
+            cls.exchange_id == exchange_id
+        ).all()

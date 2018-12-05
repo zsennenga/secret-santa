@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 from app.extensions.db_session import db
 
@@ -20,6 +20,12 @@ class ExchangeRegistration(db.Model):
         return db.session.query(ExchangeRegistration).filter(
             ExchangeRegistration.id == exchange_id
         ).first()
+
+    @classmethod
+    def get_by_exchange_id(cls, exchange_id: int) -> List[ExchangeRegistration]:
+        return db.session.query(ExchangeRegistration).filter(
+            ExchangeRegistration.exchange_id == exchange_id
+        ).all()
 
     @classmethod
     def register(
