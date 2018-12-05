@@ -10,4 +10,4 @@ class Config(ConfigBase):
 
     SECRET_KEY = 'buts lol'
 
-    SERVER_NAME = '127.0.0.1'
+    SERVER_NAME = None
