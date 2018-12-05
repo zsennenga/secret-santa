@@ -33,7 +33,7 @@ class GiftExchange(BaseBlueprint):
             return render_template('exchange/register.html')
 
         @self.route('/register', methods=['POST'])
-        def exchange_register_get():
+        def exchange_register_post():
             if not current_user.is_authenticated:
                 raise NotLoggedIn()
             exchange_id = request.form['id']
