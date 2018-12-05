@@ -30,7 +30,7 @@ class TestExchange(BaseTest):
             who_to_ask_for_help=None
     ) -> Response:
         return self.client.post(
-            BlueprintName.EXCHANGE.url_for('exchange_register_post', id=exchange_id or self.exchange.id),
+            BlueprintName.EXCHANGES.url_for('exchange_register_post', id=exchange_id or self.exchange.id),
             data={
 
                 'user_id': user_id or self.user.id,

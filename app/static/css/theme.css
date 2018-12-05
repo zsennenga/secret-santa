@@ -6,6 +6,10 @@
   padding: 0.5rem 0;
 }
 
+.navbar-brand {
+  font-size: 1.5rem;
+}
+
 .navbar .nav-item + .nav-item {
   margin-left: 1rem;
 }

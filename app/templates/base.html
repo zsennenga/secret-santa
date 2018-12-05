@@ -15,15 +15,21 @@
 </head>
 <body>
     <div class="container py-3">
-        <nav class="navbar navbar-expand-sm navbar-light bg-transparent">
+        <nav class="navbar navbar-expand-sm navbar-light bg-transparent mb-4">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarContent">
-                <a class="navbar-brand mr-auto" href="#">Secret Santa</a>
+                <a class="navbar-brand mr-auto" href="/">Gift Exchange</a>
                 <div class="navbar-nav">
-                    <a class="nav-item nav-link active" href="/exchange">Home <span class="sr-only">(current)</span></a>
-                    <a class="nav-item btn btn-outline-primary" href="/auth/register">Register</a>
+                    <a class="nav-item nav-link active" href="/">Home</a>
+                    <a class="nav-item nav-link active" href="/exchanges">Exchanges</a>
+
+                    {% if user and user.is_authenticated %}
+                        <span class="navbar-text ml-3">Hello, {{ user.name }}!</span>
+                    {% else %}
+                        <a class="nav-item btn btn-outline-primary" href="/auth/register">Register</a>
+                    {% endif %}
                 </div>
             </div>
         </nav>

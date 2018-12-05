@@ -7,6 +7,7 @@ class LoginForm(Form):
 
 
 class SignupForm(Form):
+    name = StringField('Name', validators=[validators.InputRequired()])
     email = StringField(
         label='Email',
         validators=[
@@ -22,4 +23,3 @@ class SignupForm(Form):
             validators.length(min=6, max=70),
         ],
     )
-    name = StringField('Name', validators=[validators.InputRequired()])
