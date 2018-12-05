@@ -1,5 +1,3 @@
-from flask import Response
-
 from constant.blueprint_name import BlueprintName
 from model.service.auth_service import AuthService
 from model.table.user import User
@@ -14,25 +12,6 @@ class TestAuth(BaseTest):
         self.password = 'test_password'
         self.name = 'test_name'
 
-    def _register_post(self, email=None, password=None, name=None) -> Response:
-        return self.client.post(
-            BlueprintName.AUTH.url_for('register_post'),
-            data={
-                'email': email or self.email,
-                'password': password or self.password,
-                'name': name or self.name
-            }
-        )
-
-    def _login_user(self, email=None, password=None) -> Response:
-        return self.client.post(
-            BlueprintName.AUTH.url_for('login_post'),
-            data={
-                'email': email or self.email,
-                'password': password or self.password
-            }
-        )
-
     def _verify_user(self, user_id):
         user = User.get_by_id(user_id)
 
@@ -43,7 +22,7 @@ class TestAuth(BaseTest):
         assert AuthService().verify_password(plaintext_password=self.password, password_hash=user.password)
 
     def test_register_creates_user(self):
-        user_id = self._register_post().get_data().decode()
+        user_id = self.register_post().get_data().decode()
 
         self._verify_user(user_id)
 
@@ -56,29 +35,29 @@ class TestAuth(BaseTest):
             plaintext_password=self.password
         )
 
-        response = self._login_user().get_data().decode()
+        response = self.login_user().get_data().decode()
 
         assert int(response) == user.id
 
         self._verify_user(user.id)
 
     def test_login_nonexistent_user(self):
-        response = self._login_user()
+        response = self.login_user()
 
         assert response.status_code == 401
 
     def test_login_wrong_password(self):
-        self._register_post()
-        response = self._login_user(password="wrong_password")
+        self.register_post()
+        response = self.login_user(password="wrong_password")
 
         assert response.status_code == 401
 
     def test_register_with_existing_email(self):
-        response = self._register_post()
+        response = self.register_post()
 
         assert response.status_code == 200
 
-        response = self._register_post()
+        response = self.register_post()
 
         assert response.status_code == 400
 

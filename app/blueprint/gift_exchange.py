@@ -1,8 +1,7 @@
-from flask import request, render_template
+from flask import render_template, request
 from flask_login import current_user, login_required
 
 from app.blueprint.base_blueprint import BaseBlueprint
-from app.extensions.db_session import db
 from constant.blueprint_name import BlueprintName
 from exception.auth.not_logged_in import NotLoggedIn
 from model.table.exchange_registration import ExchangeRegistration
@@ -32,22 +31,16 @@ class GiftExchange(BaseBlueprint):
         def exchange_register_get():
             return render_template('exchange/register.html')
 
-        @self.route('/register', methods=['POST'])
-        def exchange_register_post():
+        @self.route('/register/<id>', methods=['POST'])
+        def exchange_register_post(id):
             if not current_user.is_authenticated:
                 raise NotLoggedIn()
-            exchange_id = request.form['id']
-            what_to_get = request.form['what_to_get']
-            what_not_to_get = request.form['what_not_to_get']
-            who_to_ask_for_help = request.form['who_to_ask_for_help']
-
-            registration = ExchangeRegistration(
-                exchange_id=exchange_id,
+            registration = ExchangeRegistration.register(
+                exchange_id=id,
                 user_id=current_user.id,
-                what_not_to_get=what_not_to_get,
-                what_to_get=what_to_get,
-                who_to_ask_for_help=who_to_ask_for_help,
+                what_to_get=request.form.get('what_to_get'),
+                what_not_to_get=request.form.get('what_not_to_get'),
+                who_to_ask_for_help=request.form.get('who_to_ask_for_help'),
             )
 
-            db.session.add(registration)
-            db.session.commit()
+            return str(registration.id)

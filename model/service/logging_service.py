@@ -1,7 +1,10 @@
 import logging
 
+_logger = None
+
 
 class LoggingService:
+    @property
     def logger(self) -> logging.Logger:
         global _logger
 

@@ -10,7 +10,10 @@ class AuthService:
         self.hash_rounds = hash_rounds
         self.salt_size = salt_size
 
-    def hash_password(self, plaintext_password: str) -> str:
+    def hash_password(
+            self,
+            plaintext_password: str
+    ) -> str:
         return pbkdf2_sha256.using(
             rounds=self.hash_rounds,
             salt_size=self.salt_size
@@ -18,5 +21,9 @@ class AuthService:
             plaintext_password
         )
 
-    def verify_password(self, plaintext_password: str, password_hash: str) -> bool:
+    def verify_password(
+            self,
+            plaintext_password: str,
+            password_hash: str
+    ) -> bool:
         return pbkdf2_sha256.verify(plaintext_password, password_hash)

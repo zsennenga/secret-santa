@@ -1,9 +1,12 @@
 import os
 import unittest
 
+from flask import Response
+
 from app.app import init_app
 from app.extensions.db_session import db
 from config.config_test import Config
+from constant.blueprint_name import BlueprintName
 
 
 class BaseTest(unittest.TestCase):
@@ -29,7 +32,7 @@ class BaseTest(unittest.TestCase):
         )
 
         # Establish an application context before running the tests.
-        ctx = app.test_request_context()
+        ctx = app.app_context()
         ctx.push()
 
         return app
@@ -53,3 +56,22 @@ class BaseTest(unittest.TestCase):
 
     def tearDown(self):
         self.db.drop_all()
+
+    def register_post(self, email=None, password=None, name=None) -> Response:
+        return self.client.post(
+            BlueprintName.AUTH.url_for('register_post'),
+            data={
+                'email': email or 'test_email',
+                'password': password or 'test_password',
+                'name': name or 'test_name'
+            }
+        )
+
+    def login_user(self, email=None, password=None) -> Response:
+        return self.client.post(
+            BlueprintName.AUTH.url_for('login_post'),
+            data={
+                'email': email or 'test_email',
+                'password': password or 'test_password'
+            }
+        )
