@@ -15,7 +15,7 @@ class Auth(BaseBlueprint):
     def build_routes(self):
         @self.route('/login', methods=['GET'])
         def login_get():
-            if current_user.is_authenticated():
+            if current_user.is_authenticated:
                 return redirect(
                     BlueprintName.SHARED.url_for('home_get')
                 )
@@ -41,7 +41,7 @@ class Auth(BaseBlueprint):
 
         @self.route('/register', methods=['GET'])
         def register_get():
-            if current_user.is_authenticated():
+            if current_user.is_authenticated:
                 return redirect(url_for('shared_pages.home'))
 
             return render_template('auth/register.html')
