@@ -9,12 +9,14 @@ from app.blueprint.shared_pages import SharedPages
 from app.extensions.db_session import db
 from app.extensions.error_handler import ErrorHandler
 from app.extensions.login_manager import login_manager
+from app.extensions.reverse_proxied import ReverseProxied
 from config import ConfigBase, Config
 from model import table
 
 
 def init_app(import_name: str, config_module: Type[ConfigBase]) -> Flask:
     app = Flask(import_name)
+    app.wsgi_app = ReverseProxied(app.wsgi_app)
 
     app.config['SQLALCHEMY_DATABASE_URI'] = config_module.db_uri()
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

@@ -7,3 +7,4 @@ module-discovery-utils
 flask-login
 passlib
 flask-wtf
+mysqlclient
