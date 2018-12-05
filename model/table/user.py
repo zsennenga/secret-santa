@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from datetime import datetime
+from typing import Optional
+
 from app.extensions.db_session import db
 from app.extensions.login_manager import login_manager
 from exception.auth.duplicate_email import DuplicateEmail
@@ -13,9 +16,9 @@ class User(db.Model):
     password = db.Column(db.String(1024), nullable=False)
     name = db.Column(db.String(512), nullable=False)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     @classmethod
-    @login_manager.user_loader
     def get_by_id(cls, user_id: str):
         return db.session.query(User).filter(
             cls.id == user_id
@@ -38,7 +41,7 @@ class User(db.Model):
         return user
 
     @classmethod
-    def register(cls, email: str, plaintext_password: str, name: str):
+    def register(cls, email: str, plaintext_password: str, name: str) -> User:
         existing_user = db.session.query(cls).filter(
             cls.email == email
         ).first()
@@ -73,3 +76,8 @@ class User(db.Model):
 
     def get_id(self):
         return str(self.id)
+
+
+@login_manager.user_loader
+def get_by_id(user_id: str) -> Optional[User]:
+    return User.get_by_id(user_id)

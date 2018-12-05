@@ -13,6 +13,7 @@ class BlueprintName(Enum):
 
     def url_for(
             self,
-            function_name: str
+            function_name: str,
+            **kwargs
     ):
-        return url_for(f'{self.value}.{function_name}')
+        return url_for(f'{self.value}.{function_name}', **kwargs)
