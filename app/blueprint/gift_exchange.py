@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, render_template
 
 from app.blueprint.base_blueprint import BaseBlueprint
 from app.extensions.db_session import db
@@ -21,7 +21,7 @@ class GiftExchange(BaseBlueprint):
             # Summary Blurb
             # Register (if open)
             # View santa (if closed)
-            return 'Hello, World!'
+            return render_template('exchange/home.html')
 
         @self.route('/register', methods=['POST'])
         def register_post():
