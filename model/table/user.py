@@ -25,12 +25,16 @@ class User(db.Model):
         ).first()
 
     @classmethod
+    def get_by_email(cls, email: str):
+        return db.session.query(cls).filter(
+            cls.email == email
+        ).first()
+
+    @classmethod
     def login(cls, email: str, plaintext_password: str) -> User:
         auth = AuthService()
 
-        user = db.session.query(cls).filter(
-            cls.email == email
-        ).first()
+        user = cls.get_by_email(email)
 
         if user is None or not auth.verify_password(
                 plaintext_password=plaintext_password,
@@ -42,9 +46,7 @@ class User(db.Model):
 
     @classmethod
     def register(cls, email: str, plaintext_password: str, name: str) -> User:
-        existing_user = db.session.query(cls).filter(
-            cls.email == email
-        ).first()
+        existing_user = cls.get_by_email(email)
 
         if existing_user:
             raise DuplicateEmail()
