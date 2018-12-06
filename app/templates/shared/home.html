@@ -4,6 +4,19 @@
 
 {% block content %}
 
-  <h3>Home</h3>
+  <div class="jumbotron">
+    <h1 class="display-4">Give the gift of friendship</h1>
+    <p class="lead">
+      Bring your friends closer together this holiday season with a gift exchange.
+      There's no better way to show you care in this neo-capitalist hell than a blatant over-the-top display of consumerism.
+    </p>
+    <p>
+      Want to show off how thoughtful you are?
+      Interested in spending hours debating over what pointless good will please your friend?
+      Need something to do to spare you from never-ending loneliness?
+      This is for you.
+    </p>
+    <a href="{{ url_for('exchanges.exchange_create_get') }}" class="btn btn-primary btn-lg">Create a new exchange</a>
+  </div>
 
 {% endblock %}
