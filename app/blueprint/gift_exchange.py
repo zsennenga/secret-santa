@@ -28,7 +28,7 @@ class GiftExchange(BaseBlueprint):
             exchanges = Exchange.get_all()
 
             return render_template(
-                'exchanges/home.html',
+                'exchanges/list.html',
                 exchanges=exchanges,
             )
 
