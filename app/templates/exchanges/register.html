@@ -11,7 +11,7 @@
     If you do not provide enough info, any bad gifts you receive will be all your fault.
   </p>
 
-  <form method="POST">
+  <form method="POST" action="/exchanges/{{ exchange.friendly_id }}/register">
     {% for field in form %}
       <div class="form-group">
         <label for="{{ field.id }}">{{ field.label }}</label>

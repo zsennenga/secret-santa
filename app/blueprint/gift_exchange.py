@@ -41,16 +41,20 @@ class GiftExchange(BaseBlueprint):
                 exchanges=exchanges,
             )
 
-        @self.route('/<id>', methods=['GET'])
+        @self.route('/<friendly_id>', methods=['GET'])
         @login_required
-        def exchange_get(id):
-            exchange = Exchange.get_by_id(id)
+        def exchange_get(friendly_id):
+            exchange = Exchange.get_by_friendly_id(friendly_id)
             if not exchange:
                 raise NotFound
 
-            user_registration = ExchangeRegistration.get(id, current_user.id)
+            user_registration = ExchangeRegistration.get(exchange.id, current_user.id)
             if not user_registration:
-                return redirect(BlueprintName.EXCHANGES.url_for('exchanges_get'))
+                return render_template(
+                    'exchanges/register.html',
+                    exchange=exchange,
+                    form=RegisterForm(),
+                )
 
             match_registration = None
             if user_registration and user_registration.giver_mapping:
@@ -63,38 +67,33 @@ class GiftExchange(BaseBlueprint):
                 match_registration=match_registration,
             )
 
-        @self.route('/<id>/register', methods=['GET'])
+        @self.route('/<friendly_id>/register', methods=['POST'])
         @login_required
-        def exchange_register_get(id):
-            exchange = Exchange.get_by_id(id)
+        def exchange_register_post(friendly_id):
+            exchange = Exchange.get_by_friendly_id(friendly_id)
             if not exchange:
                 raise NotFound
 
-            return render_template(
-                'exchanges/register.html',
-                exchange=exchange,
-                form=RegisterForm(),
-            )
-
-        @self.route('/<id>/register', methods=['POST'])
-        @login_required
-        def exchange_register_post(id):
             ExchangeRegistration.register(
-                exchange_id=id,
+                exchange_id=exchange.id,
                 user_id=current_user.id,
                 what_to_get=request.form.get('what_to_get'),
                 what_not_to_get=request.form.get('what_not_to_get'),
                 who_to_ask_for_help=request.form.get('who_to_ask_for_help'),
             )
 
-            return redirect(BlueprintName.EXCHANGES.url_for('exchange_get', id=id))
+            return redirect(BlueprintName.EXCHANGES.url_for('exchange_get', friendly_id=friendly_id))
 
-        @self.route('/<id>/match', methods=['POST'])
+        @self.route('/<friendly_id>/match', methods=['POST'])
         @login_required
-        def match_post(id):
+        def match_post(friendly_id):
             if not current_user.is_admin:
                 raise NotAuthorized()
 
-            MatchingService().match_users(id)
+            exchange = Exchange.get_by_friendly_id(friendly_id)
+            if not exchange:
+                raise NotFound
 
-            return redirect(BlueprintName.EXCHANGES.url_for('exchange_get', id=id))
+            MatchingService().match_users(exchange.id)
+
+            return redirect(BlueprintName.EXCHANGES.url_for('exchange_get', friendly_id=friendly_id))

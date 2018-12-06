@@ -11,7 +11,7 @@ from constant.christmas_words import gen_phrase
 
 class Exchange(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    friendly_identifier = db.Column(db.String(512))
+    friendly_id = db.Column(db.String(512))
     name = db.Column(db.String(256), nullable=False)
     description = db.Column(db.Text)
     ends_at = db.Column(db.DateTime, nullable=False)
@@ -26,9 +26,9 @@ class Exchange(db.Model):
         ).first()
 
     @classmethod
-    def get_by_id(cls, exchange_id: int):
+    def get_by_friendly_id(cls, friendly_id: str):
         return db.session.query(Exchange).filter(
-            cls.id == exchange_id
+            cls.friendly_id == friendly_id
         ).first()
 
     @classmethod
@@ -38,7 +38,7 @@ class Exchange(db.Model):
         # Generate a unique phrase to use as an opaque token
         while True:
             exchange = db.session.query(Exchange).filter(
-                cls.friendly_identifier == phrase
+                cls.friendly_id == phrase
             ).first()
 
             if not exchange:
@@ -48,7 +48,7 @@ class Exchange(db.Model):
 
         exchange = Exchange(
             name=name,
-            friendly_identifier=phrase,
+            friendly_id=phrase,
             description=description,
             ends_at=ends_at,
         )

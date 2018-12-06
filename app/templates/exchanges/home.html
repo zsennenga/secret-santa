@@ -23,11 +23,7 @@
           <p class="card-text">{{ exchange.description }}</p>
         {% endif %}
         <div class="text-center">
-          {% if isRegistered %}
-            <a href="{{ url_for('exchanges.exchange_get', id=exchange.id) }}" class="btn btn-outline-primary">View</a>
-          {% else %}
-            <a href="{{ url_for('exchanges.exchange_register_get', id=exchange.id) }}" class="btn btn-primary">Register</a>
-          {% endif %}
+            <a href="{{ url_for('exchanges.exchange_get', friendly_id=exchange.friendly_id) }}" class="btn btn-outline-primary">View</a>
         </div>
       </div>
       <div class="card-footer text-muted text-center">
