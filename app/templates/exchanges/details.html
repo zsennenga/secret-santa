@@ -2,24 +2,53 @@
 
 {% block title %}Exchanges - {{ exchange.name }}{% endblock %}
 
+{% set isRegistered = user.id in exchange.registered_user_ids %}
+
 {% block content %}
-
-  <h3>{{ exchange.name }}</h3>
-
-  <div class="row">
-    <div class="col-lg">
-      <h5>You</h5>
-      {{ registration_details(your_registration) }}
+  <div class="mb-5">
+    <div>
+      <h3 style="display: inline-block">{{ exchange.name }}</h3>
+        {% if isRegistered %}
+          &nbsp;<small class="badge badge-success" style="vertical-align: top">Registered</small>
+        {% endif%}
     </div>
-    <div class="col-lg">
-      <h5>Your match</h5>
-      {% if match_registration %}
-        {{ registration_details(match_registration) }}
-      {% else %}
-        You haven't been matched yet!
-      {% endif %}
-    </div>
+
+    <p>
+      {{ exchange.description }}
+    </p>
   </div>
+
+  {% if isRegistered %}
+    <div class="row">
+      <div class="col-lg">
+        <h5>You</h5>
+        {{ registration_details(your_registration) }}
+      </div>
+      <div class="col-lg">
+        <h5>Your match</h5>
+        {% if match_registration %}
+          {{ registration_details(match_registration) }}
+        {% else %}
+          You haven't been matched yet!
+        {% endif %}
+      </div>
+    </div>
+  {% else %}
+    <p>
+      Fill out the form below to join the gift exchange! Be sure to give detailed responses.
+      If you do not provide enough info, any bad gifts you receive will be all your fault.
+    </p>
+
+    <form method="POST" action="/exchanges/{{ exchange.friendly_id }}/register">
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id }}">{{ field.label }}</label>
+          {{ field(class="form-control") }}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  {% endif %}
 
 {% endblock %}
 
