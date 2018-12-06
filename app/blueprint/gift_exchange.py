@@ -94,10 +94,10 @@ class GiftExchange(BaseBlueprint):
                 raise NotFound
 
             if current_user.id != exchange.creator_id:
-                raise NotAuthorized
+                raise NotAuthorized()
 
             if len(exchange.registered_user_ids) <= 1:
-                raise MethodNotAllowed
+                raise MethodNotAllowed()
 
             MatchingService().match_users(exchange.id)
 
