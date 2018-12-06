@@ -3,24 +3,41 @@
 {% block title %}Exchanges - {{ exchange.name }}{% endblock %}
 
 {% set isRegistered = user.id in exchange.registered_user_ids %}
+{% set numRegistered = exchange.registered_user_ids|length %}
 
 {% block content %}
   <div class="mb-5">
     <div>
       <h3 style="display: inline-block">{{ exchange.name }}</h3>
-        {% if isRegistered %}
-          &nbsp;<small class="badge badge-success" style="vertical-align: top">Registered</small>
-        {% endif%}
+      {% if isRegistered %}
+        &nbsp;<small class="badge badge-success" style="vertical-align: top">Registered</small>
+      {% endif%}
+    </div>
+
+    <div class="mb-3">
+      <ul class="list-unstyled">
+        <li class="mb-1">{{ numRegistered }} {% if numRegistered == 1 %}person{% else %}people{% endif %} registered</li>
+        <li class="small">Created on {{ exchange.created_at.strftime('%B %d, %Y') }}</li>
+        <li class="small">Ends on {{ exchange.ends_at.strftime('%B %d, %Y') }}</li>
+      </ul>
     </div>
 
     <p>
       {{ exchange.description }}
     </p>
+
+    {% if user.id == exchange.creator_id %}
+      {% if numRegistered > 1 and not match_registration %}
+        <form method="POST" action="/exchanges/{{ exchange.friendly_id }}/match" style="display: inline-block">
+          <button type="submit" class="btn btn-primary mr-3">Match participants</button>
+        </form>
+      {% endif %}
+    {% endif %}
   </div>
 
   {% if isRegistered %}
     <div class="row">
-      <div class="col-lg">
+      <div class="col-lg mb-4">
         <h5>You</h5>
         {{ registration_details(your_registration) }}
       </div>
@@ -60,6 +77,10 @@
   </p>
 
   <ul class="list-group">
+    <li class="list-group-item">
+      <h6>Name</h6>
+      <p>{{ registration.user.name }}</p>
+    </li>
     <li class="list-group-item">
       <h6>What to get</h6>
       <p>{{ registration.what_to_get }}</p>

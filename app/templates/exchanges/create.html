@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Exchanges{% endblock %}
+
+{% block content %}
+
+  <h3>Create a new exchange</h3>
+
+  <p>
+    Fill out the form below to create a new gift exchange!
+  </p>
+
+  <form method="POST" action="/exchanges">
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id }}">{{ field.label }}</label>
+        {{ field(class="form-control") }}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+
+{% endblock %}

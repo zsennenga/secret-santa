@@ -2,11 +2,11 @@ from datetime import datetime
 
 from flask import render_template, request
 from flask_login import current_user, login_required
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import NotFound, MethodNotAllowed
 from werkzeug.utils import redirect
 
 from app.blueprint.base_blueprint import BaseBlueprint
-from app.forms import RegisterForm
+from app.forms import RegisterForm, CreateExchangeForm
 from constant.blueprint_name import BlueprintName
 from exception.auth.not_authorized import NotAuthorized
 from model.service.matching_service import MatchingService
@@ -24,22 +24,29 @@ class GiftExchange(BaseBlueprint):
 
     def build_routes(self):
         @self.route('/', methods=['GET'])
-        @login_required
         def exchanges_get():
             exchanges = Exchange.get_all()
-
-            # XXX: If we don't have any exchanges, make one for testing
-            if not exchanges:
-                exchanges = [Exchange.create(
-                    name='Secret Santa',
-                    description='Gift a present to one of your closest friends on a day that is not Christmas!',
-                    ends_at=datetime(2018, 12, 25),
-                )]
 
             return render_template(
                 'exchanges/home.html',
                 exchanges=exchanges,
             )
+
+        @self.route('/', methods=['POST'])
+        @login_required
+        def exchanges_post():
+            exchange = Exchange.create(
+                creator_id=current_user.id,
+                name=request.form.get('name'),
+                description=request.form.get('description'),
+                ends_at=datetime.strptime(request.form.get('ends_at'), '%Y-%m-%d'),
+            )
+            return redirect(BlueprintName.EXCHANGES.url_for('exchange_get', friendly_id=exchange.friendly_id))
+
+        @self.route('/create', methods=['GET'])
+        @login_required
+        def exchange_create_get():
+            return render_template('exchanges/create.html', form=CreateExchangeForm())
 
         @self.route('/<friendly_id>', methods=['GET'])
         @login_required
@@ -87,12 +94,15 @@ class GiftExchange(BaseBlueprint):
         @self.route('/<friendly_id>/match', methods=['POST'])
         @login_required
         def match_post(friendly_id):
-            if not current_user.is_admin:
-                raise NotAuthorized()
-
             exchange = Exchange.get_by_friendly_id(friendly_id)
             if not exchange:
                 raise NotFound
+
+            if current_user.id != exchange.creator_id:
+                raise NotAuthorized
+
+            if len(exchange.registered_user_ids) <= 1:
+                raise MethodNotAllowed
 
             MatchingService().match_users(exchange.id)
 
