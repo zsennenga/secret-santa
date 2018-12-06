@@ -62,7 +62,7 @@ class GiftExchange(BaseBlueprint):
                 match_registration = user_registration.giver_mapping.getter_registration
 
             return render_template(
-                'exchanges/details.html',
+                'exchanges/instance.html',
                 exchange=exchange,
                 your_registration=user_registration,
                 match_registration=match_registration,
