@@ -17,26 +17,30 @@ class TestExchange(BaseTest):
         self.what_not_to_get = 'a dog'
         self.who_to_ask_for_help = 'nora or zach'
 
-        self.exchange = Exchange.create(
-            name='test',
-            ends_at=datetime.utcnow()
-        )
         self.user = User.register(
             email='test_email',
             plaintext_password='test_password',
             name='test_name'
         )
+        self.exchange = Exchange.create(
+            creator_id=self.user.id,
+            name='test',
+            ends_at=datetime.utcnow()
+        )
 
     def _register_request(
             self,
-            exchange_id=None,
+            friendly_id=None,
             user_id=None,
             what_to_get=None,
             what_not_to_get=None,
             who_to_ask_for_help=None
     ) -> Response:
         return self.client.post(
-            BlueprintName.EXCHANGES.url_for('exchange_register_post', id=exchange_id or self.exchange.id),
+            BlueprintName.EXCHANGES.url_for(
+                'exchange_register_post',
+                friendly_id=friendly_id or self.exchange.friendly_id,
+            ),
             data={
 
                 'user_id': user_id or self.user.id,
