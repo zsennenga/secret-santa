@@ -27,7 +27,7 @@ class TestMatch(BaseTest):
 
     def _create_exchange(self):
         return Exchange.create(
-            creator_id=self.creator,
+            creator_id=self.creator.id,
             name='test',
             ends_at=datetime.utcnow()
         )
