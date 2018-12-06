@@ -64,10 +64,10 @@ class TestMatch(BaseTest):
 
     def _match_request(
             self,
-            exchange_id=None,
+            friendly_id=None,
     ) -> Response:
         return self.client.post(
-            BlueprintName.EXCHANGES.url_for('match_post', id=exchange_id)
+            BlueprintName.EXCHANGES.url_for('match_post', friendly_id=friendly_id)
         )
 
     def test_exchange_not_creator(self):
@@ -77,7 +77,7 @@ class TestMatch(BaseTest):
 
         self.login_user(email=user.email, password='password')
 
-        response = self._match_request(exchange.id)
+        response = self._match_request(exchange.friendly_id)
         assert response.status_code == 401
 
     def test_exchange_is_creator(self):
@@ -85,7 +85,7 @@ class TestMatch(BaseTest):
 
         self.login_user(email=self.creator.email, password='test_password')
 
-        response = self._match_request(exchange.id)
+        response = self._match_request(exchange.friendly_id)
         assert response.status_code == 302
 
         self._verify_match(exchange.id)
