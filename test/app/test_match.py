@@ -80,8 +80,17 @@ class TestMatch(BaseTest):
         response = self._match_request(exchange.friendly_id)
         assert response.status_code == 401
 
+    def test_exchange_is_creator_too_few_participants(self):
+        exchange = self._create_exchange()
+
+        self.login_user(email=self.creator.email, password='test_password')
+
+        response = self._match_request(exchange.friendly_id)
+        assert response.status_code == 405
+
     def test_exchange_is_creator(self):
         exchange = self._create_exchange()
+        self._create_user(exchange.id)
 
         self.login_user(email=self.creator.email, password='test_password')
 

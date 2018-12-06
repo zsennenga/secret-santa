@@ -13,12 +13,18 @@ class TestMatch(BaseTest):
     def setUp(self):
         super(TestMatch, self).setUp()
         self.match_service = MatchingService()
+        self.creator = User.register(
+            email='test_email',
+            plaintext_password='test_password',
+            name='test_name'
+        )
 
     def _rand(self):
         return randint(0, 10000000)
 
     def _create_exchange(self):
         return Exchange.create(
+            creator_id=self.creator.id,
             name='test',
             ends_at=datetime.utcnow()
         )
