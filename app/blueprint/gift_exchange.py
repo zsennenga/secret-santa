@@ -56,12 +56,6 @@ class GiftExchange(BaseBlueprint):
                 raise NotFound
 
             user_registration = ExchangeRegistration.get(exchange.id, current_user.id)
-            if not user_registration:
-                return render_template(
-                    'exchanges/register.html',
-                    exchange=exchange,
-                    form=RegisterForm(),
-                )
 
             match_registration = None
             if user_registration and user_registration.giver_mapping:
@@ -72,6 +66,7 @@ class GiftExchange(BaseBlueprint):
                 exchange=exchange,
                 your_registration=user_registration,
                 match_registration=match_registration,
+                form=RegisterForm(),
             )
 
         @self.route('/<friendly_id>/register', methods=['POST'])
