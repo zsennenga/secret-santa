@@ -86,10 +86,11 @@ class TestMatch(BaseTest):
         self.login_user(email=self.creator.email, password='test_password')
 
         response = self._match_request(exchange.friendly_id)
-        assert response.status_code == 405
+        assert response.status_code == 400
 
     def test_exchange_is_creator(self):
         exchange = self._create_exchange()
+        self._create_user(exchange.id)
         self._create_user(exchange.id)
 
         self.login_user(email=self.creator.email, password='test_password')

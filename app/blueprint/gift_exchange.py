@@ -9,6 +9,7 @@ from app.blueprint.base_blueprint import BaseBlueprint
 from app.forms import RegisterForm, CreateExchangeForm
 from constant.blueprint_name import BlueprintName
 from exception.auth.not_authorized import NotAuthorized
+from exception.mapping.not_enough_users_to_match import NotEnoughUsersToMatch
 from model.service.matching_service import MatchingService
 from model.table.exchange import Exchange
 from model.table.exchange_registration import ExchangeRegistration
@@ -97,7 +98,7 @@ class GiftExchange(BaseBlueprint):
                 raise NotAuthorized()
 
             if len(exchange.registered_user_ids) <= 1:
-                raise MethodNotAllowed()
+                raise NotEnoughUsersToMatch()
 
             MatchingService().match_users(exchange.id)
 
