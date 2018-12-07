@@ -3,6 +3,7 @@ from __future__ import annotations
 from enum import Enum
 
 from flask import url_for
+from werkzeug.utils import redirect
 
 
 class BlueprintName(Enum):
@@ -17,3 +18,10 @@ class BlueprintName(Enum):
             **kwargs
     ):
         return url_for(f'{self.value}.{function_name}', **kwargs)
+
+    def redirect(
+            self,
+            function_name: str,
+            **kwargs
+    ):
+        return redirect(self.url_for(function_name, **kwargs))

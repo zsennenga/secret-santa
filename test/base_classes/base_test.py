@@ -1,13 +1,13 @@
 import os
 import unittest
 
-from flask import Response, _request_ctx_stack
-from flask_login import current_user
+from flask import Response
 
 from app.app import init_app
 from app.extensions.db_session import db
 from config.config_test import Config
 from constant.blueprint_name import BlueprintName
+
 
 class BaseTest(unittest.TestCase):
     app = None
@@ -57,6 +57,10 @@ class BaseTest(unittest.TestCase):
     def tearDown(self):
         self.db.drop_all()
         self.client.cookie_jar.clear()
+
+    def get_flashes(self):
+        with self.client.session_transaction() as session:
+            return dict(session['_flashes'])
 
     def register_post(self, email=None, password=None, name=None) -> Response:
         return self.client.post(

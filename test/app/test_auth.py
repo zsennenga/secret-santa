@@ -1,3 +1,5 @@
+from flask import get_flashed_messages
+
 from constant.blueprint_name import BlueprintName
 from model.service.auth_service import AuthService
 from model.table.user import User
@@ -42,20 +44,26 @@ class TestAuth(BaseTest):
 
     def test_login_nonexistent_user(self):
         response = self.login_user()
-        assert response.status_code == 401
+        assert response.status_code == 302
+
+        assert self.get_flashes() == {'error': "[UnableToAuthenticate] Credentials don't match any user"}
 
     def test_login_wrong_password(self):
         self.register_post()
         response = self.login_user(password="wrong_password")
 
-        assert response.status_code == 401
+        assert response.status_code == 302
+
+        assert self.get_flashes() == {'error': "[UnableToAuthenticate] Credentials don't match any user"}
 
     def test_register_with_existing_email(self):
         response = self.register_post()
         assert response.status_code == 302
 
         response = self.register_post()
-        assert response.status_code == 400
+        assert response.status_code == 302
+
+        assert self.get_flashes() == {'error': "[DuplicateEmail] Account with given email already exists"}
 
     def test_missing_required_field_login(self):
         for field in ['email', 'password']:
@@ -70,8 +78,8 @@ class TestAuth(BaseTest):
                 data=body
             )
 
-            assert response.status_code == 400
-            assert field in response.get_data().decode()
+            assert response.status_code == 302
+            assert self.get_flashes() == {'error': f"{field} is missing from the request"}
 
     def test_missing_required_field_register(self):
         for field in ['email', 'password', 'name']:
@@ -87,5 +95,6 @@ class TestAuth(BaseTest):
                 data=body
             )
 
-            assert response.status_code == 400
-            assert field in response.get_data().decode()
+            assert response.status_code == 302
+            assert self.get_flashes() == {'error': f"{field} is missing from the request"}
+
