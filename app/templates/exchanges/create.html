@@ -1,17 +1,16 @@
 {% extends 'base.html' %}
 
-{% block title %}Exchanges - {{ exchange.name }}{% endblock %}
+{% block title %}Exchanges{% endblock %}
 
 {% block content %}
 
-  <h3>Register for {{ exchange.name }}</h3>
+  <h3>Create a new exchange</h3>
 
   <p>
-    Fill out the form below to join the gift exchange! Be sure to give detailed responses.
-    If you do not provide enough info, any bad gifts you receive will be all your fault.
+    Fill out the form below to create a new gift exchange!
   </p>
 
-  <form method="POST">
+  <form method="POST" action="/exchanges">
     {% for field in form %}
       <div class="form-group">
         <label for="{{ field.id }}">{{ field.label }}</label>

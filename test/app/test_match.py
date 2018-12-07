@@ -16,12 +16,18 @@ class TestMatch(BaseTest):
     def setUp(self):
         super(TestMatch, self).setUp()
         self.match_service = MatchingService()
+        self.creator = User.register(
+            email='test_email',
+            plaintext_password='test_password',
+            name='test_name'
+        )
 
     def _rand(self):
         return randint(0, 10000000)
 
     def _create_exchange(self):
         return Exchange.create(
+            creator_id=self.creator.id,
             name='test',
             ends_at=datetime.utcnow()
         )
@@ -56,37 +62,40 @@ class TestMatch(BaseTest):
 
         assert user_ids == giver_registration_ids == getter_registration_ids
 
-    def _register_request(
+    def _match_request(
             self,
-            exchange_id=None,
+            friendly_id=None,
     ) -> Response:
         return self.client.post(
-            BlueprintName.EXCHANGES.url_for('match_post', id=exchange_id)
+            BlueprintName.EXCHANGES.url_for('match_post', friendly_id=friendly_id)
         )
 
-    def test_exchange_not_admin(self):
+    def test_exchange_not_creator(self):
         exchange = self._create_exchange()
         user = self._create_user(exchange.id)
         self._create_user(exchange.id)
 
         self.login_user(email=user.email, password='password')
 
-        response = self._register_request(exchange.id)
-
+        response = self._match_request(exchange.friendly_id)
         assert response.status_code == 401
 
-    def test_exchange_is_admin(self):
+    def test_exchange_is_creator_too_few_participants(self):
         exchange = self._create_exchange()
-        user = self._create_user(exchange.id)
+
+        self.login_user(email=self.creator.email, password='test_password')
+
+        response = self._match_request(exchange.friendly_id)
+        assert response.status_code == 400
+
+    def test_exchange_is_creator(self):
+        exchange = self._create_exchange()
+        self._create_user(exchange.id)
         self._create_user(exchange.id)
 
-        user.is_admin = True
-        self.db.session.commit()
+        self.login_user(email=self.creator.email, password='test_password')
 
-        self.login_user(email=user.email, password='password')
-
-        response = self._register_request(exchange.id)
-
+        response = self._match_request(exchange.friendly_id)
         assert response.status_code == 302
 
         self._verify_match(exchange.id)
