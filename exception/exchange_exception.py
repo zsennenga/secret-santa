@@ -13,4 +13,4 @@ class ExchangeException(Exception):
         self.response_code = response_code
 
     def __str__(self):
-        return f'[{self.__class__.__name__}] {str(self.subtype)}: {self.message}'
+        return f'[{self.__class__.__name__}] {self.message}'

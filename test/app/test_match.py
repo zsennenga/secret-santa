@@ -78,7 +78,9 @@ class TestMatch(BaseTest):
         self.login_user(email=user.email, password='password')
 
         response = self._match_request(exchange.friendly_id)
-        assert response.status_code == 401
+        assert response.status_code == 302
+
+        assert self.get_flashes() == {'error': f"Only the creator of an exchange may match users!"}
 
     def test_exchange_is_creator_too_few_participants(self):
         exchange = self._create_exchange()
@@ -86,7 +88,9 @@ class TestMatch(BaseTest):
         self.login_user(email=self.creator.email, password='test_password')
 
         response = self._match_request(exchange.friendly_id)
-        assert response.status_code == 400
+        assert response.status_code == 302
+
+        assert self.get_flashes() == {'error': 'Not enough users to begin matching'}
 
     def test_exchange_is_creator(self):
         exchange = self._create_exchange()

@@ -1,9 +1,8 @@
 from datetime import datetime
 
-from flask import render_template, request
+from flask import render_template, request, flash
 from flask_login import current_user, login_required
-from werkzeug.exceptions import NotFound, MethodNotAllowed
-from werkzeug.utils import redirect
+from werkzeug.exceptions import NotFound
 
 from app.blueprint.base_blueprint import BaseBlueprint
 from app.forms import RegisterForm, CreateExchangeForm
@@ -36,13 +35,18 @@ class GiftExchange(BaseBlueprint):
         @self.route('/', methods=['POST'])
         @login_required
         def exchanges_post():
-            exchange = Exchange.create(
-                creator_id=current_user.id,
-                name=request.form.get('name'),
-                description=request.form.get('description'),
-                ends_at=datetime.strptime(request.form.get('ends_at'), '%Y-%m-%d'),
-            )
-            return redirect(BlueprintName.EXCHANGES.url_for('exchange_get', friendly_id=exchange.friendly_id))
+            try:
+                exchange = Exchange.create(
+                    creator_id=current_user.id,
+                    name=request.form.get('name'),
+                    description=request.form.get('description'),
+                    ends_at=datetime.strptime(request.form.get('ends_at'), '%Y-%m-%d'),
+                )
+            except Exception as e:
+                flash(str(e), 'error')
+                return BlueprintName.EXCHANGES.redirect('exchanges_get')
+
+            return BlueprintName.EXCHANGES.redirect('exchange_get', friendly_id=exchange.friendly_id)
 
         @self.route('/create', methods=['GET'])
         @login_required
@@ -54,7 +58,8 @@ class GiftExchange(BaseBlueprint):
         def exchange_get(friendly_id):
             exchange = Exchange.get_by_friendly_id(friendly_id)
             if not exchange:
-                raise NotFound
+                flash(f'Exchange {friendly_id} does not exist!', 'error')
+                return BlueprintName.EXCHANGES.redirect('exchanges_get')
 
             user_registration = ExchangeRegistration.get(exchange.id, current_user.id)
 
@@ -75,31 +80,38 @@ class GiftExchange(BaseBlueprint):
         def exchange_register_post(friendly_id):
             exchange = Exchange.get_by_friendly_id(friendly_id)
             if not exchange:
-                raise NotFound
+                flash(f'Exchange {friendly_id} does not exist!', 'error')
+                return BlueprintName.EXCHANGES.redirect('exchanges_get')
 
-            ExchangeRegistration.register(
-                exchange_id=exchange.id,
-                user_id=current_user.id,
-                what_to_get=request.form.get('what_to_get'),
-                what_not_to_get=request.form.get('what_not_to_get'),
-                who_to_ask_for_help=request.form.get('who_to_ask_for_help'),
-            )
+            try:
+                ExchangeRegistration.register(
+                    exchange_id=exchange.id,
+                    user_id=current_user.id,
+                    what_to_get=request.form.get('what_to_get'),
+                    what_not_to_get=request.form.get('what_not_to_get'),
+                    who_to_ask_for_help=request.form.get('who_to_ask_for_help'),
+                )
+            except Exception as e:
+                flash(str(e), 'error')
 
-            return redirect(BlueprintName.EXCHANGES.url_for('exchange_get', friendly_id=friendly_id))
+            return BlueprintName.EXCHANGES.redirect('exchange_get', friendly_id=friendly_id)
 
         @self.route('/<friendly_id>/match', methods=['POST'])
         @login_required
         def match_post(friendly_id):
             exchange = Exchange.get_by_friendly_id(friendly_id)
             if not exchange:
-                raise NotFound
+                flash(f'Exchange {friendly_id} does not exist!', 'error')
+                return BlueprintName.EXCHANGES.redirect('exchange_get', friendly_id=friendly_id)
 
             if current_user.id != exchange.creator_id:
-                raise NotAuthorized()
+                flash(f'Only the creator of an exchange may match users!', 'error')
+                return BlueprintName.EXCHANGES.redirect('exchange_get', friendly_id=friendly_id)
 
             if len(exchange.registered_user_ids) <= 1:
-                raise NotEnoughUsersToMatch()
+                flash(f'Not enough users to begin matching', 'error')
+                return BlueprintName.EXCHANGES.redirect('exchange_get', friendly_id=friendly_id)
 
             MatchingService().match_users(exchange.id)
 
-            return redirect(BlueprintName.EXCHANGES.url_for('exchange_get', friendly_id=friendly_id))
+            return BlueprintName.EXCHANGES.redirect('exchange_get', friendly_id=friendly_id)

@@ -1,11 +1,10 @@
-from flask import request, render_template, url_for
+from flask import request, render_template, flash
 from flask_login import current_user, login_user
 from werkzeug.utils import redirect
 
 from app.blueprint.base_blueprint import BaseBlueprint
 from app.forms import SignupForm, LoginForm
 from constant.blueprint_name import BlueprintName
-from exception.general.field_missing import FieldMissing
 from model.table.user import User
 
 
@@ -27,45 +26,48 @@ class Auth(BaseBlueprint):
         def login_post():
             for field in ['email', 'password']:
                 if field not in request.form:
-                    raise FieldMissing(field)
+                    flash(f'{field} is missing from the request', 'error')
+                    return BlueprintName.AUTH.redirect('login_get')
 
             email = request.form['email']
             password = request.form['password']
 
-            logged_in_user = User.login(
-                email=email,
-                plaintext_password=password
-            )
-            login_user(logged_in_user)
+            try:
+                logged_in_user = User.login(
+                    email=email,
+                    plaintext_password=password
+                )
+                login_user(logged_in_user)
+            except Exception as e:
+                flash(str(e), 'error')
+                return BlueprintName.AUTH.redirect('login_get')
 
-            return redirect(BlueprintName.EXCHANGES.url_for('exchanges_get'))
+            return BlueprintName.EXCHANGES.redirect('exchanges_get')
 
         @self.route('/register', methods=['GET'])
         def register_get():
             if current_user.is_authenticated:
-                return redirect(url_for('shared_pages.home'))
+                return BlueprintName.SHARED.redirect('home_get')
 
             return render_template('auth/register.html', form=SignupForm())
 
         @self.route('/register', methods=['POST'])
         def register_post():
+            for field in ['email', 'password', 'name']:
+                if field not in request.form:
+                    flash(f'{field} is missing from the request', 'error')
+                    return BlueprintName.AUTH.redirect('register_get')
+
             try:
-                for field in ['email', 'password', 'name']:
-                    if field not in request.form:
-                        raise FieldMissing(field)
-            except FieldMissing as e:
-                return str(e), e.response_code
+                registered_user = User.register(
+                    email=request.form['email'],
+                    plaintext_password=request.form['password'],
+                    name=request.form['name']
+                )
 
-            email = request.form['email']
-            password = request.form['password']
-            name = request.form['name']
+                login_user(registered_user)
+            except Exception as e:
+                flash(str(e), 'error')
+                return BlueprintName.AUTH.redirect('register_get')
 
-            registered_user = User.register(
-                email=email,
-                plaintext_password=password,
-                name=name
-            )
-
-            login_user(registered_user)
-
-            return redirect(BlueprintName.EXCHANGES.url_for('exchanges_get'))
+            return BlueprintName.EXCHANGES.redirect('exchanges_get')
