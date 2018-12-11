@@ -12,9 +12,31 @@
         <label for="{{ field.id }}">{{ field.label }}</label>
         {{ field(class="form-control") }}
 
+        {% with choices = [
+          'everyone',
+          'a dog',
+          'Sam Yam',
+          'the first 150 pokemon',
+          'the wandering eye',
+          'Petco (tm), our only advertising partner',
+          'the right duck',
+          'the final whisper of winter',
+          'Santa "The Hammer" Claus',
+          'Larry, the christmas elf of multi-level marketing',
+          'anyone who says it\'s an emergency',
+          'the youtube',
+          'Paterons pledging $4 or more',
+          'your past and/or future self',
+          'the ghost of Christmas past',
+          'the ghost of Christmas present',
+          'the ghost of Christmas future',
+        ] %}
+        {% with modifiers = ['', '', '', 'probably ', 'only ', 'never '] %}
         {% if field.name == 'email' %}
-          <small class="form-text text-muted">We'll share your email with everyone.</small>
+          <small class="form-text text-muted">We'll {{ modifiers | random }}share your email with {{ choices | random }}.</small>
         {% endif %}
+        {% endwith %}
+        {% endwith %}
       </div>
     {% endfor %}
     <button type="submit" class="btn btn-primary">Submit</button>
