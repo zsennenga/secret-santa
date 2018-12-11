@@ -10,7 +10,7 @@
     Fill out the form below to create a new gift exchange!
   </p>
 
-  <form method="POST" action="/exchanges">
+  <form method="POST" action="{{ url_for('exchanges.exchanges_post') }}">
     {% for field in form %}
       <div class="form-group">
         <label for="{{ field.id }}">{{ field.label }}</label>
