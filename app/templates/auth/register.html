@@ -30,8 +30,10 @@
           'the ghost of Christmas past',
           'the ghost of Christmas present',
           'the ghost of Christmas future',
+          'Abraham Lincoln',
+          'a spooky clown',
         ] %}
-        {% with modifiers = ['', '', '', 'probably ', 'only ', 'never '] %}
+        {% with modifiers = ['', '', '', 'probably ', 'only ', 'never ', 'always '] %}
         {% if field.name == 'email' %}
           <small class="form-text text-muted">We'll {{ modifiers | random }}share your email with {{ choices | random }}.</small>
         {% endif %}
@@ -41,5 +43,7 @@
     {% endfor %}
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>
+  <br/>
+  <a href="{{ url_for('auth.login_get') }}">Already have an account? Login!</a>
 
 {% endblock %}

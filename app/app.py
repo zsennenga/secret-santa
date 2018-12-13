@@ -41,7 +41,7 @@ def init_app(import_name: str, config_module: Type[ConfigBase]) -> Flask:
         db.create_all()
 
     login_manager.init_app(app)
-    login_manager.login_view = "auth.login_get"
+    login_manager.login_view = "auth.register_get"
 
     return app
 
